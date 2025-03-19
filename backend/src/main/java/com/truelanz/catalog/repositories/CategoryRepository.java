@@ -1,9 +1,11 @@
 package com.truelanz.catalog.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.truelanz.catalog.entities.Category;
 
-// public interface CategoryRepository extends JpaRepository<Category, Long> {
+@Repository
+public interface CategoryRepository extends JpaRepository<Category, Long> {
     
-// }
+}
