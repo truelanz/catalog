@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truelanz.catalog.dto.CategoryDTO;
 import com.truelanz.catalog.entities.Category;
 import com.truelanz.catalog.services.CategoryService;
 
@@ -20,8 +21,8 @@ public class CategoryController {
     private CategoryService categoryService;
     
     @GetMapping()
-    public ResponseEntity<List<Category>> findAll() {
-        List <Category> list = categoryService.findAll();
+    public ResponseEntity<List<CategoryDTO>> findAll() {
+        List <CategoryDTO> list = categoryService.findAll();
         return ResponseEntity.ok().body(list);
     }
 
