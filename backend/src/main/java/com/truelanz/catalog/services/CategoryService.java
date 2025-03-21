@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.truelanz.catalog.dto.CategoryDTO;
+import com.truelanz.catalog.dto.ProductDTO;
 import com.truelanz.catalog.entities.Category;
+import com.truelanz.catalog.entities.Product;
 import com.truelanz.catalog.repositories.CategoryRepository;
 import com.truelanz.catalog.services.exceptions.ResourceNotFoundException;
 
@@ -29,5 +31,18 @@ public class CategoryService {
         Optional<Category> obj = categoryRepository.findById(id);
         Category entity = obj.orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
         return new CategoryDTO(entity);
+    }
+
+    @Transactional
+    public CategoryDTO insert(CategoryDTO dto) {
+        Category entity = new Category();
+        copyDtoToEntity(dto, entity);
+        entity = categoryRepository.save(entity);
+        return new CategoryDTO(entity);
+    }
+
+     //copiando do DTO para a entidade
+    private void copyDtoToEntity(CategoryDTO dto, Category entity) {
+        entity.setName(dto.getName());
     }
 }
