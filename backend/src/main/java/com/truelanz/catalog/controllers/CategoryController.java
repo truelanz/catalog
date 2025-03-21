@@ -12,6 +12,7 @@ import com.truelanz.catalog.entities.Category;
 import com.truelanz.catalog.services.CategoryService;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping(value = "/categories")
@@ -25,5 +26,10 @@ public class CategoryController {
         List <CategoryDTO> list = categoryService.findAll();
         return ResponseEntity.ok().body(list);
     }
-
+    
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<CategoryDTO> findById(@PathVariable Long id) {
+        CategoryDTO dto = categoryService.findById(id);
+        return ResponseEntity.ok().body(dto);
+    }
 }
