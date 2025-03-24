@@ -29,7 +29,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    // 500/404 - conteúdo não encontrado \\
+    //404 - conteúdo não encontrado \\
     @ExceptionHandler(DataBaseException.class)
     public ResponseEntity<StandardError> dataBaseException(DataBaseException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
