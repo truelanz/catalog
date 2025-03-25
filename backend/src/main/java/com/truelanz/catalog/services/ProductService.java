@@ -1,7 +1,6 @@
 package com.truelanz.catalog.services;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.truelanz.catalog.dto.CategoryDTO;
 import com.truelanz.catalog.dto.ProductDTO;
+import com.truelanz.catalog.entities.Category;
 import com.truelanz.catalog.entities.Product;
+import com.truelanz.catalog.repositories.CategoryRepository;
 import com.truelanz.catalog.repositories.ProductRepository;
 import com.truelanz.catalog.services.exceptions.DataBaseException;
 import com.truelanz.catalog.services.exceptions.ResourceNotFoundException;
@@ -24,6 +26,9 @@ public class ProductService {
     
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPaged(PageRequest pageable) {
@@ -78,6 +83,13 @@ public class ProductService {
         entity.setDescription(dto.getDescription());
         entity.setDate(dto.getDate());
         entity.setImgUrl(dto.getImgUrl());
-        //entity.getCategories(dto.getCategories().stream().map(x -> new ProductDTO(x)).collect(Collectors.toList()));
+
+        //Para vincular uma entidade ao produto
+        entity.getCategories().clear();
+        for (CategoryDTO categoryDTO : dto.getCategories()) {
+            Category category = categoryRepository.findById(categoryDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
+            entity.getCategories().add(category);
+        }
     }
 }
