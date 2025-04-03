@@ -18,13 +18,11 @@ public class ProductRepositoriesTests {
     private ProductRepository productRepository;
     
     private long existingId;
-    private long nonExistingId;
     private long countTotalProducts = 25L;
 
     @BeforeEach //Executar antes de cada teste
     void setUp() throws Exception {
         existingId = 1L;
-        nonExistingId = 100L;
     }
     
     @Test
@@ -45,5 +43,17 @@ public class ProductRepositoriesTests {
         Assertions.assertNotNull(product.getId());
         Assertions.assertEquals(countTotalProducts + 1, product.getId()); //ultimo salvo deve ser igual ultimo product + 1.
         Assertions.assertFalse(result.isPresent()); //proximo pós ultimo salvo não pode estar presente
+    }
+
+    @Test
+    public void findByIdShouldProductNotNullWhenIdExists() {
+        Optional<Product> result = productRepository.findById(existingId);
+        Assertions.assertTrue(result.isPresent());
+    }
+
+    @Test
+    public void findByIdShouldProductNullWhenIdNotExists() {
+        Optional<Product> result = productRepository.findById(26L);
+        Assertions.assertFalse(result.isPresent());
     }
 }
