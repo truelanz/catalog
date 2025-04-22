@@ -87,7 +87,7 @@ public class ProductService {
         //Para vincular uma entidade ao produto
         entity.getCategories().clear();
         for (CategoryDTO categoryDTO : dto.getCategories()) {
-            System.out.println(">> ID da categoria recebida no DTO: " + categoryDTO.getId()); // 👀👀
+            //System.out.println(">> ID da categoria recebida no DTO: " + categoryDTO.getId());
             Category category = categoryRepository.findById(categoryDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Category not found"));
             entity.getCategories().add(category);

@@ -47,7 +47,7 @@ public class ProductServiceTests {
     private long dependentId;
     private PageImpl<Product> page;
     private Product product;
-    ProductDTO productDto;
+    private ProductDTO productDto;
     private Category category;
 
     @BeforeEach //Executar antes de cada teste
