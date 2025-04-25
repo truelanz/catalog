@@ -4,10 +4,10 @@ import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.truelanz.catalog.repositories.exceptions.StandardError;
 import com.truelanz.catalog.services.exceptions.DataBaseException;
 import com.truelanz.catalog.services.exceptions.ResourceNotFoundException;
 
@@ -29,7 +29,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    //404 - conteúdo não encontrado \\
+    //404 -Bad Request \\
     @ExceptionHandler(DataBaseException.class)
     public ResponseEntity<StandardError> dataBaseException(DataBaseException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -41,6 +41,22 @@ public class ControllerExceptionHandler {
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
-    
-    
+
+    //400/422 - unprocessable entity
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+        ValidationError err = new ValidationError();
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Validation Exeption");
+        err.setMessage("validation failed in some field");
+        err.setPath(request.getRequestURI());
+
+        e.getBindingResult().getFieldErrors().forEach(fieldError -> {
+            err.addError(fieldError.getField(), fieldError.getDefaultMessage());
+        });
+
+        return ResponseEntity.status(status).body(err);
+    }
 }

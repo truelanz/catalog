@@ -1,4 +1,4 @@
-package com.truelanz.catalog.repositories.exceptions;
+package com.truelanz.catalog.controllers.handlers;
 
 import java.time.Instant;
 
@@ -16,5 +16,4 @@ public class StandardError {
     private String error;
     private String message;
     private String path;
-    
 }
