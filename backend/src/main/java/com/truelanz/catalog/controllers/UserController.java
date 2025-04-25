@@ -12,6 +12,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.truelanz.catalog.dto.UserDTO;
 import com.truelanz.catalog.dto.UserInsertDTO;
+import com.truelanz.catalog.dto.UserUpdateDTO;
 import com.truelanz.catalog.services.UserService;
 
 import jakarta.validation.Valid;
@@ -53,9 +54,9 @@ public class UserController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO dto) {
-        dto = userService.update(id, dto);
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserUpdateDTO dto) {
+        UserDTO newDto = userService.update(id, dto);
+        return ResponseEntity.ok(newDto);
     }
 
     @DeleteMapping(value = "/{id}")

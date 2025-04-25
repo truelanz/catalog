@@ -2,6 +2,7 @@ package com.truelanz.catalog.controllers.handlers;
 
 import java.time.Instant;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,7 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    // 500/404 - Not found Recource - Validation on Service
+    // 500 -> 404 - Not found Recource - Validation on Service
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<StandardError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
@@ -42,7 +43,23 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    //400/422 - unprocessable entity - Validation on Controller
+    // 500 -> 422 - unprocessable entity - Validation on Repository
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ValidationError> handleDataIntegrityViolation(DataIntegrityViolationException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+        ValidationError err = new ValidationError();
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Database Integrity Violation");
+        err.setMessage("validation failed in some field");
+        err.setPath(request.getRequestURI());
+
+        err.addError("email", "email already exists");
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    //400 -> 422 - unprocessable entity - Validation on Controller
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
