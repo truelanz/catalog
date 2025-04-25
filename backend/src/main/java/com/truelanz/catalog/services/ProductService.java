@@ -30,12 +30,14 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    // Find all sem retornar categorias
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPaged(Pageable pageable) {
         Page<Product> result = productRepository.findAll(pageable);
         return result.map(x -> new ProductDTO(x));
     }
 
+    // Find by Id retornando as categorias
     @Transactional(readOnly = true)
     public ProductDTO findById(Long id) {
         Optional<Product> obj = productRepository.findById(id);

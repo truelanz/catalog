@@ -14,6 +14,8 @@ import com.truelanz.catalog.dto.UserDTO;
 import com.truelanz.catalog.dto.UserIsertDTO;
 import com.truelanz.catalog.services.UserService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +45,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<UserDTO> insert(@RequestBody UserIsertDTO dto) {
+    public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserIsertDTO dto) {
         UserDTO userDto = userService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
         .buildAndExpand(userDto.getId()).toUri();

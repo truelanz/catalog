@@ -6,6 +6,8 @@ import java.util.Set;
 import com.truelanz.catalog.entities.Role;
 import com.truelanz.catalog.entities.User;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,8 +21,11 @@ import lombok.Setter;
 public class UserDTO {
 
     private Long id;
+    @NotBlank(message = "Required field")
     private String firstName;
+    @NotBlank(message = "Required field")
     private String lastName;
+    @Email(message = "Not a valid email")
     private String email;
 
     @Setter(AccessLevel.NONE)

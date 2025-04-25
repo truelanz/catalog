@@ -13,6 +13,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.truelanz.catalog.dto.RoleDTO;
 import com.truelanz.catalog.services.RoleService;
 
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +44,7 @@ public class RoleController {
     }
 
     @PostMapping()
-    public ResponseEntity<RoleDTO> insert(@RequestBody RoleDTO dto) {
+    public ResponseEntity<RoleDTO> insert(@Valid @RequestBody RoleDTO dto) {
         dto = roleService.insert(dto);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
         .buildAndExpand(dto.getId()).toUri();
