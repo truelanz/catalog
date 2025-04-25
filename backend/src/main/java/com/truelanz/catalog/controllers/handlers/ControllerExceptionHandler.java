@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class ControllerExceptionHandler {
 
-    // 500/404 - conteúdo não encontrado \\
+    // 500/404 - Not found Recource - Validation on Service
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<StandardError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
@@ -29,7 +29,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    //404 -Bad Request \\
+    //404 -Bad Request - Validation on Service
     @ExceptionHandler(DataBaseException.class)
     public ResponseEntity<StandardError> dataBaseException(DataBaseException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -42,7 +42,7 @@ public class ControllerExceptionHandler {
         return ResponseEntity.status(status).body(err);
     }
 
-    //400/422 - unprocessable entity
+    //400/422 - unprocessable entity - Validation on Controller
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;

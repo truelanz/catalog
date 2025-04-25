@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.truelanz.catalog.dto.RoleDTO;
 import com.truelanz.catalog.dto.UserDTO;
-import com.truelanz.catalog.dto.UserIsertDTO;
+import com.truelanz.catalog.dto.UserInsertDTO;
 import com.truelanz.catalog.entities.Role;
 import com.truelanz.catalog.entities.User;
 import com.truelanz.catalog.repositories.RoleRepository;
@@ -49,7 +49,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserDTO insert(UserIsertDTO dto) {
+    public UserDTO insert(UserInsertDTO dto) {
         User entity = new User();
         copyDtoToEntity(dto, entity);
 
