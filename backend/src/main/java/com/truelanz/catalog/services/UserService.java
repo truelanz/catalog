@@ -1,12 +1,16 @@
 package com.truelanz.catalog.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +21,7 @@ import com.truelanz.catalog.dto.UserInsertDTO;
 import com.truelanz.catalog.dto.UserUpdateDTO;
 import com.truelanz.catalog.entities.Role;
 import com.truelanz.catalog.entities.User;
+import com.truelanz.catalog.projections.UserDetailProjection;
 import com.truelanz.catalog.repositories.RoleRepository;
 import com.truelanz.catalog.repositories.UserRepository;
 import com.truelanz.catalog.services.exceptions.DataBaseException;
@@ -25,10 +30,10 @@ import com.truelanz.catalog.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
     
     @Autowired
     private UserRepository userRepository;
@@ -99,5 +104,21 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("Role not found"));
             entity.getRoles().add(role);
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        List<UserDetailProjection> result = userRepository.searchUserAndRolesByEmail(username);
+        if(result.size() == 0) {
+            throw new UsernameNotFoundException("Email not found");
+        }
+
+        User user = new User();
+        user.setEmail(result.get(0).getUsername());
+        user.setPassword(result.get(0).getPassword());
+        for(UserDetailProjection projection : result) {
+            user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
+        }
+        return user;
     }
 }

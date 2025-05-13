@@ -10,7 +10,7 @@
 ```
 ---
 
-### Config provisória para liberar todos endpoints e h2-console. (Sprint Boot 3.1+):
+## ☑️ Config provisória para liberar todos endpoints e h2-console. (Sprint Boot 3.1+):
 ```java
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +34,7 @@ public class SecurityConfig {
 
 ---
 
-### Criptografar senha inserida por usuário:
+### 🔒 Criptografar senha inserida por usuário:
 ```java
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,7 +70,7 @@ public class AppConfig {
 
 ---
 
-### Contraint Validator Customizado
+## ⚠️ Contraint Validator Customizado
 
 - Criar a própria regra de validação, quando as anotações padrão como `@NotBlank`, `@Size`, `@Email`, etc., não são suficientes. Quando precisar validar regras específicas de negócio, como:
 
@@ -140,8 +140,9 @@ public class UserInsertValidator implements ConstraintValidator<UserInsertValid,
 	}
 }
 ```
+---
 
-### .properties configs:
+## ⚙️ .properties configs:
 `application.properties`
 ```properties
 # Configurações gerais, funciona em todos os perfis
@@ -193,3 +194,57 @@ spring.jpa.hibernate.ddl-auto=none
 spring.jpa.show-sql=false
 spring.jpa.properties.hibernate.format_sql=false
 ```
+---
+
+## 🗝️ Adicionar Segurança com Spring security e OAuth2 
+
+### 1. Modelo de domínio User-Role
+![alt text](image.png)
+
+### 2. Dependências
+```xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+<dependency>
+	<groupId>org.springframework.security</groupId>
+	<artifactId>spring-security-test</artifactId>
+	<scope>test</scope>
+</dependency>
+
+<dependency>
+	<groupId>org.springframework.security</groupId>
+	<artifactId>spring-security-oauth2-authorization-server</artifactId>
+</dependency>
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+</dependency>
+```
+
+### 3. Checklist Spring security
+- GrantedAuthority
+- UserDetails
+- UserDetailsService
+- UsernameNotFoundException
+
+### 4. Configs de properties
+```properties
+security.client-id=${CLIENT_ID:myclientid}
+security.client-secret=${CLIENT_SECRET:myclientsecret}
+
+security.jwt.duration=${JWT_DURATION:86400}
+
+cors.origins=${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
+```
+
+### 5. Checklist OAuth2 JWT password grant
+- Base de referencia: [password-grant](https://github.com/truelanz/spring-boot-oauth2-jwt-demo/tree/main/password-grant)
+- Implementação customizada do password grant
+Authorization server
+- Resource server
+
+### 6. Fazer o controle de acesso por perfil e rota

@@ -1,7 +1,11 @@
 package com.truelanz.catalog.entities;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,7 +31,7 @@ import lombok.Setter;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Table(name = "tb_user")
 @Entity
-public class User {
+public class User implements UserDetails {
     
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,4 +49,55 @@ public class User {
 		joinColumns = @JoinColumn(name = "user_id"),
 		inverseJoinColumns = @JoinColumn(name = "role_id"))	
     private Set<Role> roles = new HashSet<>();
+
+    //Métodos da interface UserDetails
+
+    //Método para adicionar roles ao usuário
+    public void addRole(Role role) {
+      roles.add(role);
+    }
+
+    //Método para remover roles do usuário
+    public void removeRole(Role role) {
+      roles.remove(role);
+    }
+    //Método para verificar se o usuário tem uma role, por nome.
+    public boolean hasRole(String roleName) {
+      for (Role role : roles) {
+        if (role.getAuthority().equals(roleName)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+      return roles;
+    }
+
+    @Override
+    public String getUsername() {
+      return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+      return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+      return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+      return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+      return true;
+    }
 }
