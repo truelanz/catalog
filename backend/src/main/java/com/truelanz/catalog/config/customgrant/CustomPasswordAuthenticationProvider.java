@@ -76,7 +76,7 @@ public class CustomPasswordAuthenticationProvider implements AuthenticationProvi
 		if (!passwordEncoder.matches(password, user.getPassword()) || !user.getUsername().equals(username)) {
 			throw new OAuth2AuthenticationException("Invalid credentials");
 		}
-		
+
 		authorizedScopes = user.getAuthorities().stream()
 				.map(scope -> scope.getAuthority())
 				.filter(scope -> registeredClient.getScopes().contains(scope))

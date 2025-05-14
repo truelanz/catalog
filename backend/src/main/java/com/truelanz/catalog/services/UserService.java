@@ -109,6 +109,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<UserDetailProjection> result = userRepository.searchUserAndRolesByEmail(username);
+
         if(result.size() == 0) {
             throw new UsernameNotFoundException("Email not found");
         }
@@ -116,6 +117,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setEmail(result.get(0).getUsername());
         user.setPassword(result.get(0).getPassword());
+        
         for(UserDetailProjection projection : result) {
             user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
         }

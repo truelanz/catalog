@@ -61,6 +61,7 @@ public class User implements UserDetails {
     public void removeRole(Role role) {
       roles.remove(role);
     }
+    
     //Método para verificar se o usuário tem uma role, por nome.
     public boolean hasRole(String roleName) {
       for (Role role : roles) {
