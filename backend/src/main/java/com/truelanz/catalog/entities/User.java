@@ -50,28 +50,6 @@ public class User implements UserDetails {
 		inverseJoinColumns = @JoinColumn(name = "role_id"))	
     private Set<Role> roles = new HashSet<>();
 
-    //Métodos da interface UserDetails
-
-    //Método para adicionar roles ao usuário
-    public void addRole(Role role) {
-      roles.add(role);
-    }
-
-    //Método para remover roles do usuário
-    public void removeRole(Role role) {
-      roles.remove(role);
-    }
-    
-    //Método para verificar se o usuário tem uma role, por nome.
-    public boolean hasRole(String roleName) {
-      for (Role role : roles) {
-        if (role.getAuthority().equals(roleName)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
       return roles;
@@ -100,5 +78,27 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
       return true;
+    }
+
+    //Métodos da interface UserDetails
+
+    //Método para adicionar roles ao usuário
+    public void addRole(Role role) {
+      roles.add(role);
+    }
+
+    //Método para remover roles do usuário
+    public void removeRole(Role role) {
+      roles.remove(role);
+    }
+    
+    //Método para verificar se o usuário tem uma role, por nome.
+    public boolean hasRole(String roleName) {
+      for (Role role : roles) {
+        if (role.getAuthority().equals(roleName)) {
+          return true;
+        }
+      }
+      return false;
     }
 }

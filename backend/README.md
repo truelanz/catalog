@@ -247,4 +247,41 @@ cors.origins=${CORS_ORIGINS:http://localhost:3000,http://localhost:5173}
 Authorization server
 - Resource server
 
-### 6. Fazer o controle de acesso por perfil e rota
+---
+
+>## JPQL query com `JOIN FETCH` (evitando consultas lentas n:1)
+### Join Fetch n:1 (todos)
+```java
+@Query(value = "SELECT obj FROM Employee obj JOIN FETCH obj.department")
+	List<Employee> searchAll();
+```
+### Join Fetch n:n (todos)
+```java
+//Seleciona todos os produtos (obj) e as categorias pelo atributo n:n categories, com obj.categories
+@Query(value = "SELECT obj FROM Product obj JOIN FETCH obj.categories")
+	public List<Product> searchAll();
+```
+### Join Fetch n:1 (paginado, countQuery)
+```java
+@Query(value = "SELECT obj FROM Employee obj JOIN FETCH obj.department",
+			countQuery = "SELECT COUNT(obj) FROM Employee obj JOIN obj.department")
+	Page<Employee> searchAll(Pageable pageable);
+```
+---
+
+>## Casos de uso da aplicação (Consulta paginada de produtos)
+1. [OUT] O **sistema** informa id e nome de todas categorias de produto
+2. [IN] O **usuário** informa:
+	- trecho do nome do produto (opcional)
+	- categorias de produto desejadas (opcional)
+	- número da página desejada
+	- quantidade de itens por página
+3. [OUT] O **sistema** informa uma listagem paginada dos produtos com suas respectivas categorias, conforme os critérios de consulta, ordenados por nome.
+
+>## Signup
+
+- Signup
+- Recuperação de senha
+- Obter usuário logado
+- Consultas ao banco de dados
+- Envio de Gmail.

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +26,7 @@ import com.truelanz.catalog.services.exceptions.DataBaseException;
 import com.truelanz.catalog.services.exceptions.ResourceNotFoundException;
 import com.truelanz.catalog.tests.Factory;
 
-@WebMvcTest(ProductController.class)
+@WebMvcTest(value = ProductController.class, excludeAutoConfiguration = {SecurityAutoConfiguration.class}) //Testar apenas o controller, excluindo a configuração de segurança
 public class ProductControllerTests {
     
     @Autowired
@@ -124,7 +126,8 @@ public class ProductControllerTests {
             .andExpect(MockMvcResultMatchers.status().isCreated())
             .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
             .andExpect(MockMvcResultMatchers.jsonPath("$.name").exists())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.description").exists());
+            .andExpect(MockMvcResultMatchers.jsonPath("$.description").exists())
+            .andDo(MockMvcResultHandlers.print());
     }
 
 

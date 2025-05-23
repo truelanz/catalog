@@ -1,6 +1,7 @@
 package com.truelanz.catalog.controllers;
 
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,8 +34,8 @@ public class CategoryController {
     private CategoryService categoryService;
     
     @GetMapping()
-    public ResponseEntity<Page<CategoryDTO>> findAll(Pageable pageable) {
-        Page <CategoryDTO> list = categoryService.findAllPaged(pageable);
+    public ResponseEntity<List<CategoryDTO>> findAll() {
+        List <CategoryDTO> list = categoryService.findAll();
         return ResponseEntity.ok().body(list);
     }
     

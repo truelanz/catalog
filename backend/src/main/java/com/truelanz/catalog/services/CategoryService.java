@@ -1,5 +1,6 @@
 package com.truelanz.catalog.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,9 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public Page<CategoryDTO> findAllPaged(Pageable pageable) {
-        Page<Category> result = categoryRepository.findAll(pageable);
-        return result.map(x -> new CategoryDTO(x));
+    public List<CategoryDTO> findAll() {
+        List<Category> result = categoryRepository.findAll();
+        return result.stream().map(x -> new CategoryDTO(x)).toList();
     }
 
     @Transactional(readOnly = true)

@@ -11,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-//import lombok.AccessLevel;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -38,7 +38,7 @@ public class Role implements GrantedAuthority {
         this.authority = authority;
     }
 
-    //@Setter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     @ManyToMany(mappedBy = "roles")
     private Set<User> users = new HashSet<>();
 
