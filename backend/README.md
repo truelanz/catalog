@@ -249,28 +249,48 @@ Authorization server
 
 ---
 
->## JPQL query com `JOIN FETCH` (evitando consultas lentas n:1)
+>## Consultas com `JOIN FETCH` (_evitando consultas lentas n:1_)
+
 ### Join Fetch n:1 (todos)
 ```java
+//JPQL
 @Query(value = "SELECT obj FROM Employee obj JOIN FETCH obj.department")
 	List<Employee> searchAll();
 ```
+
 ### Join Fetch n:n (todos)
 ```java
+//JPQL
 //Seleciona todos os produtos (obj) e as categorias pelo atributo n:n categories, com obj.categories
 @Query(value = "SELECT obj FROM Product obj JOIN FETCH obj.categories")
 	public List<Product> searchAll();
 ```
-### Join Fetch n:1 (paginado, countQuery)
+
+### Join Fetch n:1 (quando paginado usar countQuery)
 ```java
-@Query(value = "SELECT obj FROM Employee obj JOIN FETCH obj.department",
-			countQuery = "SELECT COUNT(obj) FROM Employee obj JOIN obj.department")
-	Page<Employee> searchAll(Pageable pageable);
+//Native Query
+@Query(nativeQuery = true, value = """
+        SELECT DISTINCT p.id, p.name 
+        FROM tb_product p
+        INNER JOIN tb_product_category pc ON p.id = pc.product_id
+        WHERE (:categoryIds IS NULL OR pc.category_id IN :categoryIds)
+        AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))
+        ORDER BY p.name
+        """, countQuery = """
+        SELECT COUNT(*) FROM (
+            SELECT DISTINCT p.id, p.name 
+            FROM tb_product p
+            INNER JOIN tb_product_category pc ON p.id = pc.product_id
+            WHERE (:categoryIds IS NULL OR pc.category_id IN :categoryIds)
+            AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))
+        ) AS tb_result
+    """)
+    Page<ProductProjection> searchProducts(List<Long> categoryIds, String name, Pageable pageable);
 ```
 ---
 
 >## Casos de uso da aplicação (Consulta paginada de produtos)
-1. [OUT] O **sistema** informa id e nome de todas categorias de produto
+1. [OUT] O **sistema** informa id e nome de **todas** categorias de produto
 2. [IN] O **usuário** informa:
 	- trecho do nome do produto (opcional)
 	- categorias de produto desejadas (opcional)
