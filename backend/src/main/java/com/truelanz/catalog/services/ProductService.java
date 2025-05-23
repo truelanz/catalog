@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -42,7 +43,7 @@ public class ProductService {
 
     //FindAllPaged com @RequestParams e nativeQuery
     @Transactional(readOnly = true)
-    public Page<ProductProjection> findAllPaged(String name, String categoryId, Pageable pageable) {
+    public Page<ProductDTO> findAllPaged(String name, String categoryId, Pageable pageable) {
 
         //Converter string de ids para uma Long List
         List<Long> categoryIdList = Arrays.asList();
@@ -50,7 +51,16 @@ public class ProductService {
         if (!"0".equals(categoryId)){
             categoryIdList = Arrays.asList(categoryId.split(",")).stream().map(Long::parseLong).toList();
         }
-        return productRepository.searchProducts(categoryIdList, name, pageable);
+        Page<ProductProjection> page = productRepository.searchProducts(categoryIdList, name, pageable);
+        List<Long> productsIds = page.map(x -> x.getId()).toList();
+
+        List<Product> entities = productRepository.searchProductsWithCategories(productsIds);
+        //Converter lista de produtos para dtos
+        List<ProductDTO> dtos = entities.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
+
+        //instanciar productDTO complete como pageable
+        Page<ProductDTO> pageDto = new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
+        return pageDto;
     }
 
     // Find by Id retornando as categorias
