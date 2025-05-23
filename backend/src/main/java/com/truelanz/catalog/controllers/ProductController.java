@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.truelanz.catalog.dto.ProductDTO;
+import com.truelanz.catalog.projections.ProductProjection;
 import com.truelanz.catalog.services.ProductService;
 
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +44,7 @@ public class ProductController {
         Page <ProductDTO> list = productService.findAllPaged(name, categoryId, pageable);
         return ResponseEntity.ok().body(list);
     }
-    
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
         ProductDTO dto = productService.findById(id);
