@@ -8,10 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.truelanz.catalog.dto.ProductDTO;
+import com.truelanz.catalog.projections.ProductProjection;
 import com.truelanz.catalog.services.ProductService;
 
 import jakarta.validation.Valid;
@@ -32,9 +34,19 @@ public class ProductController {
     @Autowired
     private ProductService productService;
     
-    @GetMapping()
+   /*  @GetMapping()
     public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable) { //Parametros: page, size, sort
         Page <ProductDTO> list = productService.findAllPaged(pageable);
+        return ResponseEntity.ok().body(list);
+    } */
+
+    //FindAllPaged com @RequestParams e nativeQuery
+    @GetMapping()
+    public ResponseEntity<Page<ProductProjection>> findAll(
+        @RequestParam(value = "name", defaultValue = "") String name,
+        @RequestParam(value = "categoryId", defaultValue = "0") String categoryId,
+        Pageable pageable) {
+        Page <ProductProjection> list = productService.findAllPaged(name, categoryId, pageable);
         return ResponseEntity.ok().body(list);
     }
     

@@ -1,5 +1,7 @@
 package com.truelanz.catalog.services;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import com.truelanz.catalog.dto.CategoryDTO;
 import com.truelanz.catalog.dto.ProductDTO;
 import com.truelanz.catalog.entities.Category;
 import com.truelanz.catalog.entities.Product;
+import com.truelanz.catalog.projections.ProductProjection;
 import com.truelanz.catalog.repositories.CategoryRepository;
 import com.truelanz.catalog.repositories.ProductRepository;
 import com.truelanz.catalog.services.exceptions.DataBaseException;
@@ -35,6 +38,19 @@ public class ProductService {
     public Page<ProductDTO> findAllPaged(Pageable pageable) {
         Page<Product> result = productRepository.findAll(pageable);
         return result.map(x -> new ProductDTO(x));
+    }
+
+    //FindAllPaged com @RequestParams e nativeQuery
+    @Transactional(readOnly = true)
+    public Page<ProductProjection> findAllPaged(String name, String categoryId, Pageable pageable) {
+
+        //Converter string de ids para uma Long List
+        List<Long> categoryIdList = Arrays.asList();
+        //Somente se não houver passado parâmetro de Request, converter String de ids para uma Long List
+        if (!"0".equals(categoryId)){
+            categoryIdList = Arrays.asList(categoryId.split(",")).stream().map(Long::parseLong).toList();
+        }
+        return productRepository.searchProducts(categoryIdList, name, pageable);
     }
 
     // Find by Id retornando as categorias
