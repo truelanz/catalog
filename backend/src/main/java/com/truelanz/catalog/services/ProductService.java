@@ -22,6 +22,7 @@ import com.truelanz.catalog.repositories.CategoryRepository;
 import com.truelanz.catalog.repositories.ProductRepository;
 import com.truelanz.catalog.services.exceptions.DataBaseException;
 import com.truelanz.catalog.services.exceptions.ResourceNotFoundException;
+import com.truelanz.catalog.util.Utils;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -42,6 +43,7 @@ public class ProductService {
     }
 
     //FindAllPaged com @RequestParams e nativeQuery
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPaged(String name, String categoryId, Pageable pageable) {
 
@@ -55,12 +57,12 @@ public class ProductService {
         List<Long> productsIds = page.map(x -> x.getId()).toList();
 
         List<Product> entities = productRepository.searchProductsWithCategories(productsIds);
-        //Converter lista de produtos para dtos
+        entities = (List<Product>) Utils.replace(page.getContent(), entities); //Gerar nova lista (ordenada)
+        
         List<ProductDTO> dtos = entities.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
 
         //instanciar productDTO complete como pageable
-        Page<ProductDTO> pageDto = new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
-        return pageDto;
+        return new PageImpl<>(dtos, page.getPageable(), page.getTotalElements());
     }
 
     // Find by Id retornando as categorias

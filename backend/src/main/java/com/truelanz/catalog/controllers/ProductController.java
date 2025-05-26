@@ -13,11 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.truelanz.catalog.dto.ProductDTO;
-import com.truelanz.catalog.projections.ProductProjection;
 import com.truelanz.catalog.services.ProductService;
 
 import jakarta.validation.Valid;
-import jakarta.websocket.server.PathParam;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

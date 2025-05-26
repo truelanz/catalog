@@ -13,12 +13,13 @@ import com.truelanz.catalog.projections.ProductProjection;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query(nativeQuery = true, value = """
+        SELECT * FROM (
         SELECT DISTINCT p.id, p.name 
         FROM tb_product p
         INNER JOIN tb_product_category pc ON p.id = pc.product_id
         WHERE (:categoryIds IS NULL OR pc.category_id IN :categoryIds)
         AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))
-        ORDER BY p.name
+        ) AS tb_result
         """, countQuery = """
         SELECT COUNT(*) FROM (
             SELECT DISTINCT p.id, p.name 
@@ -31,6 +32,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<ProductProjection> searchProducts(List<Long> categoryIds, String name, Pageable pageable);
 
     @Query("SELECT obj FROM Product obj JOIN FETCH obj.categories "
-		+ "WHERE obj.id IN :productIds ORDER BY obj.name")
+		+ "WHERE obj.id IN :productIds")
         List<Product> searchProductsWithCategories(List<Long> productIds);
     }
