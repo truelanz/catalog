@@ -298,6 +298,41 @@ Authorization server
 	- quantidade de itens por página
 3. [OUT] O **sistema** informa uma listagem paginada dos produtos com suas respectivas categorias, conforme os critérios de consulta, ordenados por nome.
 
+---
+
+>## Criar perfil `application-dev.properties`
+```properties
+# -- Descomentar para gerar um script SQL com a base de dados --
+#spring.jpa.properties.jakarta.persistence.schema-generation.create-source=metadata
+#spring.jpa.properties.jakarta.persistence.schema-generation.scripts.action=create
+#spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-target=create.sql
+#spring.jpa.properties.hibernate.hbm2ddl.delimiter=;
+
+spring.datasource.url=jdbc:postgresql://localhost:5433/dbName
+spring.datasource.username=postgres
+spring.datasource.password=serverPassword
+
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
+spring.jpa.hibernate.ddl-auto=none
+```
+### comandos SQL para excluir tables:
+```SQL
+SELECT 'drop table if exists ' || tablename || ' cascade;' 
+FROM pg_tables
+WHERE schemaname = 'public';
+```
+
+### Adicionar maven dependency:
+```xml
+<dependency>
+	<groupId>org.postgresql</groupId>
+	<artifactId>postgresql</artifactId>
+	<scope>runtime</scope>
+</dependency>
+```
+---
+
 >## Signup
 
 - Signup
