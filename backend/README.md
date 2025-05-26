@@ -336,6 +336,14 @@ WHERE schemaname = 'public';
 >## Signup
 
 - Signup
+	- [IN] O usuário informa primeiro nome, sobrenome, email e senha
+	- [OUT] O sistema informa os erros de validação
+ - Informações complementares
+	- Critérios de validação de usuário
+	- Nome: campo requerido
+	- Email: email válido
+	- Senha: mínimo 8 caracteres
+	
 - Recuperação de senha
 - Obter usuário logado
 - Consultas ao banco de dados

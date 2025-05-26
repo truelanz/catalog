@@ -59,6 +59,11 @@ public class UserService implements UserDetailsService {
         User entity = new User();
         copyDtoToEntity(dto, entity);
 
+        //Setar ROLE_OPERATOR como padrão na criação de usuários
+        entity.getRoles().clear();
+        Role role = roleRepository.findByAuthority("ROLE_OPERATOR");
+        entity.getRoles().add(role);
+
         //Criptografando password com BCryptPasswordEncoder da classe AppConfig
         entity.setPassword(passwordEncoder.encode(dto.getPassword())); 
         
