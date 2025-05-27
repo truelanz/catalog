@@ -41,10 +41,20 @@ public class UserService implements UserDetailsService {
     @Autowired
     private RoleRepository roleRepository;
 
+    @Autowired
+    private AuthService authService;
+
     @Transactional(readOnly = true)
     public Page<UserDTO> findAllPaged(Pageable pageable) {
         Page<User> result = userRepository.findAll(pageable);
         return result.map(x -> new UserDTO(x));
+    }
+
+    //Obter Usuário logado
+    @Transactional(readOnly = true)
+    public UserDTO findMe() {
+        User entity = authService.authenticated();
+        return new UserDTO(entity); //retorna também as Roles dos usuários
     }
 
     @Transactional(readOnly = true)

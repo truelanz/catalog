@@ -322,6 +322,14 @@ SELECT 'drop table if exists ' || tablename || ' cascade;'
 FROM pg_tables
 WHERE schemaname = 'public';
 ```
+### Resetar sequencia de ID's no Postgres desde o último maior ID existente:
+```SQL
+-- Procurar pela tabela:
+SELECT pg_get_serial_sequence('tb_user', 'id');
+
+-- Resetar IDs
+SELECT setval('tb_user_id_seq', (SELECT MAX(id) FROM tb_user));
+```
 
 ### Adicionar maven dependency:
 ```xml
@@ -335,16 +343,99 @@ WHERE schemaname = 'public';
 
 >## Signup
 
-- Signup
-	- [IN] O usuário informa primeiro nome, sobrenome, email e senha
-	- [OUT] O sistema informa os erros de validação
- - Informações complementares
+- [IN] O usuário informa primeiro nome, sobrenome, email e senha
+- [OUT] O sistema informa os erros de validação
+
+- Informações complementares
 	- Critérios de validação de usuário
 	- Nome: campo requerido
 	- Email: email válido
 	- Senha: mínimo 8 caracteres
-	
-- Recuperação de senha
-- Obter usuário logado
-- Consultas ao banco de dados
-- Envio de Gmail.
+
+- **Preparando o projeto para envio de email**:
+
+	- [criar senha de App na account Google](https://myaccount.google.com/u/3/apppasswords?continue=https://myaccount.google.com/u/3/security?rapt%3DAEjHL4NztdiDgTz1smmHC4lZl8xBpkDebB3yPIearT8hVHeK6bJK39qXSK7orVcYytLnQpzm42oE1ak6KhxGebsKbQUSyvz9OcOdzA8Zu4imAWcfYtAJZVQ%26authuser%3D3&pli=1&rapt=AEjHL4ONMFtjj_SrIHqyW4KZTR5rH5ywhRtcukiP72_6wMst8HQQ3Kop2vXMXXZvlZQp80oqlEN7Hy7qpt4e0uAgr4siJhUljk3KymgYskWCwVZOrU3tLmU) e salvar em um lugar seguro.
+	- adicionar ao `application.properties`:
+	```properties
+	spring.mail.host=${EMAIL_HOST:smtp.gmail.com}
+	spring.mail.port=${EMAIL_PORT:587}
+	spring.mail.username=${EMAIL_USERNAME:test@gmail.com}
+	spring.mail.password=${EMAIL_PASSWORD:123456}
+	spring.mail.properties.mail.smtp.auth=true
+	spring.mail.properties.mail.smtp.starttls.enable=true
+	```
+	- No VSCODE adicionar as variáveis de ambiente em `launch.json`:
+	```json
+	"env": {
+				"EMAIL_USERNAME": "yourEmail@gmail.com",
+				"EMAIL_PASSWORD": "google senha App",
+				"DB_URL": "jdbc:postgresql://localhost:5432/projectName",
+				"DB_USERNAME": "yourDbName",
+				"DB_PASSWORD": "YourPassword" 
+            }
+	```
+	- Adcionar `.vscode/` ou `.env` ao .gitignore para não vazar as informações confidenciais do projeto. 
+	- Usar [Projeto ref. para envio Email](https://github.com/devsuperior/spring-boot-gmail)
+	- Adicionar dependencia para envio de email no pom.xml:
+	```xml
+	 	<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+	```
+	- Body para testar envio com endpoint:
+	```json
+	"to": "destinatario@gmail.com",
+    "subject": "Aviso aos clientes",
+    "body": "Prezado cliente,\n\nAcesse agora:\n\nhttps://devsuperior.com.br\n\nAbraços!"
+	```
+
+- **Recuperação de senha com Gmail**
+
+	- Caso de uso recuperação de senha
+	Cenário principal:
+	1. [IN] O usuário informa seu email
+	2. [OUT] O sistema informa o token de recuperação e a validade do mesmo
+	3. [IN] O usuário informa o token de recuperação e a nova senha
+
+	**Exceção 1.1: Email inválido**
+
+		1.1.1. [OUT] O sistema informa que o email é inválido
+		Exceção 1.2: Email não encontrado
+		1.2.1. [OUT] O sistema informa que o email não foi encontrado
+		Exceção 3.1: Token inválido
+		3.1.1. [OUT] O sistema informa que o token é inválido
+		Exceção 3.2: Erro de validação
+		3.1.2. [OUT] O sistema informa que a senha é inválida
+		Informações complementares
+
+		Critérios de validação de senha: 
+		Mínimo 8 caracteres
+
+	- **Adicionar em `application.properties` Variáveis de ambiente para recuperação de senha:**
+	```properties
+	email.password-recover.token.minutes=${PASSWORD_RECOVER_TOKEN_MINUTES:30}
+	email.password-recover.uri=${PASSWORD_RECOVER_URI:http://localhost:5173/recover-password/}
+
+	```
+	- **JPQL para encontrar token não expirado**:
+	```java
+	@Query("SELECT obj FROM PasswordRecover obj WHERE obj.token = :token AND obj.expiration > :now")
+	List<PasswordRecover> searchValidTokens(String token, Instant now);
+	```
+
+- **Obter usuário logado**
+
+```java
+protected User authenticated() {
+  try {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
+    String username = jwtPrincipal.getClaim("username");
+    return userRepository.findByEmail(username);
+  }
+  catch (Exception e) {
+    throw new UsernameNotFoundException("Invalid user");
+  }
+}
+```
